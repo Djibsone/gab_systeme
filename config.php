@@ -17,10 +17,10 @@ function _recp($num){
     return $req;
 }
 
-function _versement($num){
+function _versement($versement){
     $db = dbConnect();
     $req = $db->prepare('SELECT * FROM compte WHERE num_compte = ?');
-    $req->execute(array($num));
+    $req->execute(array($versement));
     return $req;
 }
 

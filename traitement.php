@@ -12,16 +12,35 @@ if (isset($_POST['ok'])) {
     $compt_crdit = _versement($versement);
     $result = $compt_crdit->fetch();
     if ($data['solde'] > 0) {
-        $credit = $data['solde'] - $montant;
-        $trnsfert = $credit + $result['solde'];
-        
-        $stmt = updateCompte($trnsfert, $versement);
-        ($stmt) ? $_SESSION['message'] = 'Le transfère a été réçu' : $_SESSION['message'] = 'Une erreur s\'est produite lors du transfère';
-        updateCompteDebit($credit, $numero);
-    } else {
+        if ($montant < $data['solde']) {
+            $credit = $data['solde'] - $montant;
+            $trnsfert = $result['solde'] + $montant;
+
+            $stmt = updateCompte($trnsfert, $versement);
+            ($stmt) ? $_SESSION['message'] = 'Le transfère a été éffectué avec succè' : $_SESSION['message'] = 'Une erreur s\'est produite lors du transfère';
+            updateCompteDebit($credit, $numero);
+        } 
+        elseif ($montant == $data['solde']) {
+            $credit = $data['solde'] - $montant;
+            $trnsfert = $result['solde'] + $data['solde'];
+
+            $stmt = updateCompte($trnsfert, $versement);
+            ($stmt) ? $_SESSION['message'] = 'Le transfère a été éffectué avec succè' : $_SESSION['message'] = 'Une erreur s\'est produite lors du transfère';
+            updateCompteDebit($credit, $numero);
+        } 
+        else {
+            $_SESSION['message'] = 'Solde insuffisant';
+        } 
+
+        // $stmt = updateCompte($trnsfert, $versement);
+        // ($stmt) ? $_SESSION['message'] = 'Le transfère a été éffectué avec succè' : $_SESSION['message'] = 'Une erreur s\'est produite lors du transfère';
+        // updateCompteDebit($credit, $numero);
+    } 
+    else {
         $_SESSION['message'] = 'Solde insuffisant';
     }
-   } else {
+   } 
+   else {
     $_SESSION['message'] = 'les champs sont vides';
    }
    header('Location: ./');
